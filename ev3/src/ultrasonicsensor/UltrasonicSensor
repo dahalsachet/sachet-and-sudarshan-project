@@ -1,0 +1,43 @@
+package ultrasonic;
+
+import lejos.hardware.Button;
+import lejos.hardware.lcd.LCD;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.robotics.SampleProvider;
+
+public class UltrasonicExample {
+
+    public static void main(String[] args) {
+
+        // Initialize the ultrasonic sensor on port 3
+        EV3UltrasonicSensor usSensor = new EV3UltrasonicSensor(SensorPort.S3);
+
+        // Get a distance mode sample provider
+        SampleProvider distanceProvider = usSensor.getDistanceMode();
+
+        // Array to hold the distance value
+        float[] distanceSample = new float[distanceProvider.sampleSize()];
+
+        // Loop until ESCAPE button is pressed
+        while (!Button.ESCAPE.isDown()) {
+            // Fetch the current distance
+            distanceProvider.fetchSample(distanceSample, 0);
+
+            // Display the distance on screen
+            LCD.clear();
+            LCD.drawString(String.format("Distance: %.2f m", distanceSample[0]), 0, 0);
+
+            // Wait a bit before next reading
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                // Handle the exception properly
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        // Always close the sensor when done
+        usSensor.close();
+    }
+}
